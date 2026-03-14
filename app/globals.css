@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
+/* ডিফল্ট (Light Mode) ভ্যারিয়েবলসমূহ */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+/* যখন .dark ক্লাসটি অ্যাপ্লাই হবে (next-themes এর মাধ্যমে) */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 @theme inline {
@@ -12,8 +19,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* সিস্টেম প্রেফারেন্স অনুযায়ী অটোমেটিক ডার্ক মোড */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
@@ -23,4 +31,5 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
 }
