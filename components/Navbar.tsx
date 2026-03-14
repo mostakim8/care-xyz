@@ -8,33 +8,44 @@ export default function Navbar() {
 
   return (
     <nav className="bg-white dark:bg-gray-900 text-black dark:text-white p-4 shadow-md transition-colors duration-300">
-      <div className="container mx-auto flex justify-between items-center">
+      <div className="container mx-auto flex justify-between items-center relative">
+        {/* Logo */}
         <h1 className="text-xl font-bold cursor-pointer">Care.xyz</h1>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-6 items-center">
+        {/* Desktop Menu - মাঝখানে আনার জন্য flex-1 এবং justify-center */}
+        <div className="hidden md:flex flex-1 justify-center space-x-8 items-center">
           <Link
             href="/"
-            className="hover:text-blue-600 dark:hover:text-blue-400"
+            className="hover:text-blue-600 dark:hover:text-blue-400 transition"
           >
             Home
           </Link>
           <Link
             href="/my-bookings"
-            className="hover:text-blue-600 dark:hover:text-blue-400"
+            className="hover:text-blue-600 dark:hover:text-blue-400 transition"
           >
             My Bookings
           </Link>
           <Link
+            href="/about"
+            className="hover:text-blue-600 dark:hover:text-blue-400 transition"
+          >
+            About Us
+          </Link>
+        </div>
+
+        {/* Login & Theme Toggle (ডান পাশে) */}
+        <div className="hidden md:flex items-center space-x-4">
+          <ThemeToggle />
+          <Link
             href="/login"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
           >
             Login
           </Link>
-          <ThemeToggle />
         </div>
 
-        {/* Mobile Hamburger Button + Theme Toggle together */}
+        {/* Mobile Hamburger Button + Theme Toggle (ডান পাশে) */}
         <div className="md:hidden flex items-center space-x-4">
           <ThemeToggle />
           <button
@@ -58,6 +69,9 @@ export default function Navbar() {
             onClick={() => setIsOpen(false)}
           >
             My Bookings
+          </Link>
+          <Link href="/about" className="py-2" onClick={() => setIsOpen(false)}>
+            About Us
           </Link>
           <Link
             href="/login"
