@@ -74,6 +74,12 @@ export default function Navbar() {
             About Us
           </Link>
           <Link
+            href="/contact"
+            className="hover:text-blue-600 dark:hover:text-blue-400"
+          >
+            Contact
+          </Link>
+          <Link
             href="/login"
             className="bg-blue-600 text-white mx-10 py-2 rounded"
             onClick={() => setIsOpen(false)}

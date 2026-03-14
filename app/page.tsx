@@ -1,10 +1,8 @@
-// app/page.tsx
 import { services } from "@/data/services";
 import Link from "next/link";
 
 export default function Home() {
   return (
-    // dark:bg-gray-950 যোগ করা হয়েছে পুরো পেজের ব্যাকগ্রাউন্ডের জন্য
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-300">
       {/* Banner Section */}
       <section className="bg-blue-600 dark:bg-blue-900 text-white py-20 px-6 text-center transition-colors duration-300">
@@ -14,13 +12,19 @@ export default function Home() {
         <p className="text-lg md:text-xl mb-8 opacity-90">
           Professional care services at your doorstep.
         </p>
-        <button className="bg-white text-blue-600 dark:bg-gray-800 dark:text-white px-8 py-3 rounded-full font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+
+        {/* বাটনটিকে Link দিয়ে মুড়িয়ে দেওয়া হয়েছে */}
+        <Link
+          href="#services"
+          className="inline-block bg-white text-blue-600 dark:bg-gray-800 dark:text-white px-8 py-3 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        >
           Book a Service
-        </button>
+        </Link>
       </section>
 
       {/* Services Section */}
-      <section className="py-16 px-6 max-w-6xl mx-auto">
+      {/* id="services" যোগ করা হয়েছে যেন বাটনে ক্লিক করলে এখানে স্ক্রল হয় */}
+      <section id="services" className="py-16 px-6 max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-12 text-black dark:text-white">
           Our Services
         </h2>
@@ -29,7 +33,6 @@ export default function Home() {
           {services.map((service) => (
             <div
               key={service.id}
-              // কার্ডের ব্যাকগ্রাউন্ড লাইট মোডে সাদা এবং ডার্ক মোডে ধূসর
               className="p-6 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300"
             >
               <h3 className="text-xl font-semibold mb-2 text-black dark:text-white">
