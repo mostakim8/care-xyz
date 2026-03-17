@@ -1,58 +1,131 @@
-"use client"; // যেহেতু স্টেট ব্যবহার করছি
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation"; 
 
 export default function MyBookings() {
-  const initialBookings = [
-    { id: 1, service: "Baby Care", date: "2026-03-20", status: "Confirmed" },
-    {
-      id: 2,
-      service: "Elderly Service",
-      date: "2026-03-22",
-      status: "Pending",
-    },
-    { id: 3, service: "Sick Care", date: "2026-03-25", status: "Completed" },
-  ];
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter(); 
 
-  const [bookings, setBookings] = useState(initialBookings);
-
-  // বুকিং ডিলিট করার ফাংশন (Real-time update)
-  const handleCancel = (id: number) => {
-    setBookings(bookings.filter((b) => b.id !== id));
+  const serviceNames: { [key: string]: string } = {
+    "1": "Baby Sitting",
+    "2": "Elderly Care",
+    "3": "Sick People Service",
   };
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        
+        fetch(`/api/my-bookings?userId=${user.uid}`)
+          .then((res) => res.json())
+          .then((result) => {
+            const data = Array.isArray(result) ? result : result.data;
+            if (data) setBookings(data);
+          })
+          .catch((err) => console.error("Fetch Error:", err))
+          .finally(() => setLoading(false));
+      } else {
+        
+        router.push("/login");
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleCancel = async (id: string) => {
+    if (!id) return;
+    const confirmCancel = window.confirm("Are you sure you want to cancel?");
+    if (!confirmCancel) return;
+
+    try {
+      const res = await fetch(`/api/bookings/${id}`, { method: "DELETE" });
+      const result = await res.json();
+      if (res.ok && result.success) {
+        alert("Booking Cancelled successfully!");
+        setBookings((prev) => prev.filter((b) => b._id !== id));
+      } else {
+        alert(`Error: ${result.error || "Failed to delete"}`);
+      }
+    } catch (error) {
+      alert("Network error. Please try again.");
+    }
+  };
+
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <p className="text-white ml-4">Checking Authentication...</p>
+      </div>
+    );
+
   return (
-    <div className="max-w-4xl mx-auto py-16 px-6">
-      <h1 className="text-3xl font-bold mb-8 text-black dark:text-white">
+    <div className="container mx-auto p-8 min-h-screen bg-black text-white">
+      <h1 className="text-3xl font-bold mb-8 pl-4 border-l-4 border-blue-600">
         My Bookings
       </h1>
-      <div className="overflow-x-auto bg-white dark:bg-gray-900 rounded-lg shadow-sm border border-gray-200 dark:border-gray-800">
-        <table className="w-full text-left">
-          <thead className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-            <tr>
-              <th className="p-4">Service</th>
-              <th className="p-4">Date</th>
-              <th className="p-4">Status</th>
-              <th className="p-4">Action</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-            {bookings.map((booking) => (
-              <tr key={booking.id} className="text-black dark:text-gray-300">
-                <td className="p-4">{booking.service}</td>
-                <td className="p-4">{booking.date}</td>
-                <td className="p-4 font-semibold">{booking.status}</td>
-                <td className="p-4">
-                  <button
-                    onClick={() => handleCancel(booking.id)}
-                    className="text-red-500 hover:text-red-700 cursor-pointer underline"
-                  >
-                    Cancel
-                  </button>
-                </td>
+
+      <div className="bg-gray-900 rounded-xl overflow-hidden border border-gray-800 shadow-2xl">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-gray-800 text-gray-300">
+              <tr>
+                <th className="p-5 font-semibold">Service</th>
+                <th className="p-5 font-semibold">Location</th>
+                <th className="p-5 font-semibold">Cost</th>
+                <th className="p-4 font-semibold text-center">Status</th>
+                <th className="p-4 font-semibold text-center">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {bookings.length > 0 ? (
+                bookings.map((booking) => (
+                  <tr
+                    key={booking._id}
+                    className="border-b border-gray-800 hover:bg-gray-800/40 transition-colors"
+                  >
+                    <td className="p-5 font-medium">
+                      {serviceNames[booking.serviceId] ||
+                        booking.serviceId ||
+                        "General Service"}
+                    </td>
+                    <td className="p-5 text-gray-400">
+                      {booking.city}, {booking.district}
+                    </td>
+                    <td className="p-5 text-blue-400 font-bold">
+                      ${booking.totalCost}
+                    </td>
+                    <td className="p-4 text-center">
+                      <span className="bg-yellow-900/30 text-yellow-500 py-1 px-3 rounded-full text-xs font-semibold">
+                        {booking.status || "Pending"}
+                      </span>
+                    </td>
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={() => handleCancel(booking._id)}
+                        className="text-red-500 hover:text-red-700 transition-all font-medium border border-red-500/20 px-3 py-1 rounded-md hover:bg-red-500/10"
+                      >
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="p-10 text-center text-gray-500 italic"
+                  >
+                    You have no active bookings.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

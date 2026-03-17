@@ -2,7 +2,7 @@
 import { services } from "@/data/services";
 import { notFound } from "next/navigation";
 import { use } from "react";
-import BookingForm from "@/components/BookingForm"; // নতুন ফর্মটি ইমপোর্ট করুন
+import BookingForm from "@/components/BookingForm"; 
 
 export default function ServiceDetails({
   params,
@@ -16,12 +16,11 @@ export default function ServiceDetails({
     notFound();
   }
 
-  // সার্ভিস প্রাইস থেকে সংখ্যা বের করার ফাংশন (যেমন: "$50" থেকে "50")
+  
   const priceValue = parseInt(service.price.replace(/[^0-9]/g, "")) || 0;
 
   return (
     <div className="max-w-4xl mx-auto py-16 px-6 bg-white dark:bg-black transition-colors duration-300">
-      {/* সার্ভিস ইনফরমেশন */}
       <h1 className="text-4xl font-bold mb-4 text-black dark:text-white">
         {service.title}
       </h1>
@@ -32,7 +31,7 @@ export default function ServiceDetails({
         Price: {service.price} per day
       </p>
 
-      {/* ডাইনামিক বুকিং ফর্ম */}
+      
       <div className="mt-10 border-t border-gray-200 dark:border-gray-800 pt-8">
         <BookingForm pricePerDay={priceValue} />
       </div>

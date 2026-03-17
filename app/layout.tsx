@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer"; // ফুটার ইমপোর্ট করুন
+import Footer from "@/components/Footer"; 
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <Navbar />
-          {/* Footer টি এখানে যোগ করা হলো */}
+         
           <main className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors duration-300">
             {children}
           </main>
