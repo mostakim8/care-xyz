@@ -4,16 +4,17 @@ import Booking from "@/models/Booking";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }, 
+  { params }: { params: Promise<{ id: string }> }, // এখানে Promise টাইপ ব্যবহার করা হয়েছে
 ) {
   try {
     await connectToDatabase();
 
+    // বিল্ড এরর ফিক্স করতে params কে অবশ্যই await করতে হবে
     const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
-        { success: false, error: "ID not found" },
+        { success: false, error: "Booking ID is required" },
         { status: 400 },
       );
     }
@@ -27,11 +28,14 @@ export async function DELETE(
       );
     }
 
-    return NextResponse.json({ success: true, message: "Deleted" });
+    return NextResponse.json({
+      success: true,
+      message: "Booking deleted successfully",
+    });
   } catch (error: any) {
-    console.error("Delete Error:", error);
+    console.error("Delete API Error:", error.message);
     return NextResponse.json(
-      { success: false, error: error.message },
+      { success: false, error: "Internal Server Error" },
       { status: 500 },
     );
   }
