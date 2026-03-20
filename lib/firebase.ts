@@ -10,6 +10,9 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
+if (!firebaseConfig.apiKey && typeof window === "undefined") {
+  firebaseConfig.apiKey = "dummy-key-for-build";
+}
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
