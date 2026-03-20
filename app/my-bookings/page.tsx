@@ -2,12 +2,12 @@
 import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter(); 
+  const router = useRouter();
 
   const serviceNames: { [key: string]: string } = {
     "1": "Baby Sitting",
@@ -16,25 +16,34 @@ export default function MyBookings() {
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    // onAuthStateChanged ব্যবহার করায় এটি ফায়ারবেসের কনফার্মেশনের জন্য ওয়েট করবে
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        
-        fetch(`/api/my-bookings?userId=${user.uid}`)
-          .then((res) => res.json())
-          .then((result) => {
-            const data = Array.isArray(result) ? result : result.data;
-            if (data) setBookings(data);
-          })
-          .catch((err) => console.error("Fetch Error:", err))
-          .finally(() => setLoading(false));
+        try {
+          // আপনার API কল
+          const res = await fetch(`/app/api/my-bookings?userId=${user.uid}`);
+          const result = await res.json();
+
+          // গুরুত্বপূর্ণ: আপনার API 'data' প্রপার্টির ভেতর অ্যারে পাঠাচ্ছে
+          if (result.success && result.data) {
+            setBookings(result.data);
+          }
+        } catch (err) {
+          console.error("Fetch Error:", err);
+        } finally {
+          setLoading(false);
+        }
       } else {
-        
+        // ফায়ারবেস যখন নিশ্চিত করবে ইউজার নেই, তখনই রিডাইরেক্ট করবে
+        setLoading(false);
         router.push("/login");
       }
     });
+
     return () => unsubscribe();
   }, [router]);
 
+  // handleCancel ফাংশনটি আগের মতোই থাকবে...
   const handleCancel = async (id: string) => {
     if (!id) return;
     const confirmCancel = window.confirm("Are you sure you want to cancel?");
@@ -54,13 +63,14 @@ export default function MyBookings() {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-black">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        <p className="text-white ml-4">Checking Authentication...</p>
+      <div className="flex flex-col justify-center items-center h-screen bg-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+        <p className="text-white">Verifying your session...</p>
       </div>
     );
+  }
 
   return (
     <div className="container mx-auto p-8 min-h-screen bg-black text-white">
