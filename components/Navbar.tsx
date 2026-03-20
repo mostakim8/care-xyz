@@ -111,7 +111,7 @@ export default function Navbar() {
               My Bookings
             </Link>
           ) : (
-            <Link href="/#services" onClick={() => setIsOpen(false)}>
+            <Link href="/services" onClick={() => setIsOpen(false)}>
               All Services
             </Link>
           )}
