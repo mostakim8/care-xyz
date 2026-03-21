@@ -21,7 +21,7 @@ export default function MyBookings() {
       if (user) {
         try {
           // আপনার API কল
-          const res = await fetch(`/app/api/my-bookings?userId=${user.uid}`);
+          const res = await fetch(`/api/my-bookings?userId=${user.uid}`);
           const result = await res.json();
 
           // গুরুত্বপূর্ণ: আপনার API 'data' প্রপার্টির ভেতর অ্যারে পাঠাচ্ছে
