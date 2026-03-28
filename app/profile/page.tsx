@@ -1,15 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { auth, db } from "@/lib/firebase";
+import { auth } from "@/lib/firebase"; // db ব্যবহারের প্রয়োজন নেই যেহেতু MongoDB থেকে ডাটা আসবে
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import {
-  collection,
-  query,
-  where,
-  onSnapshot,
-  orderBy,
-} from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { services } from "@/data/services"; // আপনার সার্ভিস ডাটা ইম্পোর্ট করা হলো
 
 export default function Profile() {
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -22,7 +16,6 @@ export default function Profile() {
     const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          // ১. ইউজারের বেসিক প্রোফাইল ডাটা ফেচ (MongoDB API থেকে)
           const res = await fetch(`/api/users?uid=${user.uid}`);
           if (!res.ok) throw new Error("Failed to fetch profile");
           const userData = await res.json();
@@ -35,30 +28,16 @@ export default function Profile() {
             uid: user.uid,
           });
 
-          // ২. বুকিং হিস্ট্রি রিয়েল-টাইম লিসেনার (Firestore থেকে)
-          // এখানে collection(db, "bookings") আপনার Firestore কালেকশনের নাম হতে হবে
-          const q = query(
-            collection(db, "bookings"),
-            where("userId", "==", user.uid),
+          // Firestore-এর বদলে MongoDB API থেকে ডাটা আনা
+          const bookingRes = await fetch(
+            `/api/bookings?uid=${user.uid}&role=${userData.role}`,
           );
+          if (bookingRes.ok) {
+            const bookingsData = await bookingRes.json();
+            setBookings(bookingsData);
+          }
 
-          const unsubscribeBookings = onSnapshot(
-            q,
-            (snapshot) => {
-              const bookingsData = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }));
-              setBookings(bookingsData);
-              setLoading(false);
-            },
-            (err) => {
-              console.error("Firestore Error:", err);
-              setLoading(false);
-            },
-          );
-
-          return () => unsubscribeBookings();
+          setLoading(false);
         } catch (err) {
           console.error("Profile Load Error:", err);
           setError("Could not load profile data.");
@@ -72,6 +51,27 @@ export default function Profile() {
 
     return () => unsubscribeAuth();
   }, [router]);
+
+  // MongoDB API ব্যবহার করে স্ট্যাটাস আপডেট
+  const updateBookingStatus = async (id: string, newStatus: string) => {
+    try {
+      const res = await fetch(`/api/bookings/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        setBookings((prev) =>
+          prev.map((b) => (b._id === id ? { ...b, status: newStatus } : b)),
+        );
+      } else {
+        alert("Failed to update status");
+      }
+    } catch (err) {
+      console.error("Update Error:", err);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -93,9 +93,8 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* --- Profile Card Section --- */}
+        {/* --- Profile Card Section (আপনার আগের ডিজাইন অনুযায়ী) --- */}
         <div className="bg-white dark:bg-gray-900 p-8 rounded-[32px] shadow-xl border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center gap-8">
-          {/* Profile Image */}
           <div className="relative">
             <img
               src={
@@ -105,21 +104,24 @@ export default function Profile() {
               alt="Profile"
               className="w-32 h-32 rounded-3xl object-cover border-4 border-white dark:border-gray-800 shadow-lg"
             />
-            <div className="absolute -bottom-1 -right-1 bg-green-500 w-5 h-5 rounded-full border-4 border-white dark:border-gray-900"></div>
+            <div
+              className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-white dark:border-gray-900 ${userProfile?.role === "admin" ? "bg-blue-500" : "bg-green-500"}`}
+            ></div>
           </div>
 
-          {/* User Info */}
           <div className="flex-1 text-center md:text-left space-y-3">
             <div>
-              <h2 className="text-3xl font-black text-black dark:text-white">
-                {userProfile?.displayName || "Care User"}
+              <h2 className="text-3xl font-black text-black dark:text-white capitalize">
+                {userProfile?.name ||
+                  userProfile?.displayName ||
+                  userProfile?.email?.split("@")[0] ||
+                  "Care User"}
               </h2>
               <p className="text-gray-500 dark:text-gray-400 font-medium">
                 {userProfile?.email}
               </p>
             </div>
 
-            {/* Dynamic Details: Age, Gender, Location */}
             <div className="flex flex-wrap justify-center md:justify-start gap-3">
               <div className="bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-xl border border-blue-100 dark:border-blue-800 text-center min-w-[90px]">
                 <p className="text-[10px] uppercase text-blue-500 font-bold tracking-wider">
@@ -139,19 +141,18 @@ export default function Profile() {
               </div>
               <div className="bg-orange-50 dark:bg-orange-900/20 px-4 py-2 rounded-xl border border-orange-100 dark:border-orange-800 text-center min-w-[90px]">
                 <p className="text-[10px] uppercase text-orange-500 font-bold tracking-wider">
-                  Location
+                  Role
                 </p>
-                <p className="font-black dark:text-orange-100 truncate max-w-[100px]">
-                  {userProfile?.location || "N/A"}
+                <p className="font-black dark:text-orange-100 capitalize">
+                  {userProfile?.role || "User"}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Logout Button */}
           <button
             onClick={handleLogout}
-            className="bg-red-50 text-red-600 px-8 py-3 rounded-2xl hover:bg-red-600 hover:text-white transition-all font-bold border border-red-100 shadow-sm self-center md:self-start"
+            className="bg-red-50 text-red-600 px-8 py-3 rounded-2xl hover:bg-red-600 hover:text-white transition-all font-bold border border-red-100 cursor-pointer shadow-sm self-center md:self-start"
           >
             Logout
           </button>
@@ -161,10 +162,13 @@ export default function Profile() {
         <div className="bg-white dark:bg-gray-900 rounded-[32px] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
           <div className="p-6 border-b dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
             <h3 className="text-xl font-bold tracking-tight">
-              Booking History
+              {userProfile?.role === "admin"
+                ? "All Appointments"
+                : "My Booking History"}
             </h3>
             <span className="bg-blue-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase">
-              {bookings.length} Bookings
+              {bookings.length}{" "}
+              {userProfile?.role === "admin" ? "Total" : "Bookings"}
             </span>
           </div>
 
@@ -175,48 +179,88 @@ export default function Profile() {
                   <tr>
                     <th className="px-8 py-4">Service Details</th>
                     <th className="px-8 py-4 text-center">Status</th>
-                    <th className="px-8 py-4 text-right">Amount</th>
+                    <th className="px-8 py-4 text-right">Action / Amount</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y dark:divide-gray-800">
-                  {bookings.map((booking) => (
-                    <tr
-                      key={booking.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors group"
-                    >
-                      <td className="px-8 py-5">
-                        <p className="font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 transition-colors">
-                          {booking.serviceName || "Premium Service"}
-                        </p>
-                        <p className="text-[10px] text-gray-400 font-medium mt-1">
-                          Order ID: {booking.id.toUpperCase()}
-                        </p>
-                      </td>
-                      <td className="px-8 py-5 text-center">
-                        <span
-                          className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter ${
-                            booking.status === "succeeded" ||
-                            booking.status === "paid" ||
-                            booking.status === "Completed"
-                              ? "bg-green-100 text-green-600 dark:bg-green-900/20"
-                              : "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20"
-                          }`}
-                        >
-                          {booking.status || "Processing"}
-                        </span>
-                      </td>
-                      <td className="px-8 py-5 text-right font-black text-blue-600 text-lg">
-                        ${booking.totalCost}
-                      </td>
-                    </tr>
-                  ))}
+                  {bookings.map((booking) => {
+                    // সার্ভিস আইডি মিলিয়ে নাম বের করা
+                    const serviceInfo = services.find(
+                      (s) => s.id === booking.serviceId,
+                    );
+
+                    return (
+                      <tr
+                        key={booking._id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors group"
+                      >
+                        <td className="px-8 py-5">
+                          <p className="font-bold text-gray-800 dark:text-gray-100 group-hover:text-blue-600 transition-colors">
+                            {serviceInfo?.title ||
+                              booking.serviceName ||
+                              "Premium Service"}
+                          </p>
+                          <p className="text-[10px] text-gray-400 font-medium mt-1 uppercase tracking-tighter">
+                            ID: {booking._id?.slice(-8).toUpperCase()}...{" "}
+                            {userProfile?.role === "admin" &&
+                              `| By: ${booking.userName || "User"}`}
+                          </p>
+                        </td>
+                        <td className="px-8 py-5 text-center">
+                          <span
+                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tighter ${
+                              booking.status === "Completed" ||
+                              booking.status === "Confirmed"
+                                ? "bg-green-100 text-green-600 dark:bg-green-900/20"
+                                : booking.status === "Cancelled"
+                                  ? "bg-red-100 text-red-600 dark:bg-red-900/20"
+                                  : "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20"
+                            }`}
+                          >
+                            {booking.status || "Processing"}
+                          </span>
+                        </td>
+                        <td className="px-8 py-5 text-right">
+                          {userProfile?.role === "admin" &&
+                          booking.status !== "Completed" &&
+                          booking.status !== "Confirmed" &&
+                          booking.status !== "Cancelled" ? (
+                            <div className="flex justify-end gap-2">
+                              <button
+                                onClick={() =>
+                                  updateBookingStatus(booking._id, "Confirmed")
+                                }
+                                className="bg-green-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black hover:bg-green-700 transition cursor-pointer uppercase"
+                              >
+                                {" "}
+                                Confirm{" "}
+                              </button>
+                              <button
+                                onClick={() =>
+                                  updateBookingStatus(booking._id, "Cancelled")
+                                }
+                                className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-[10px] font-black hover:bg-red-600 hover:text-white transition cursor-pointer uppercase border border-red-100"
+                              >
+                                {" "}
+                                Cancel{" "}
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="font-black text-blue-600 text-lg">
+                              ${booking.totalCost}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             ) : (
               <div className="p-20 text-center">
-                <div className="text-4xl mb-4">empty</div>
+                <div className="text-4xl mb-4">📭</div>
                 <p className="text-gray-400 font-medium italic">
-                  You haven't made any bookings yet.
+                  No bookings records found.
                 </p>
               </div>
             )}

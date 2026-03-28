@@ -79,7 +79,7 @@ export default function Home() {
                 href={`/service/${service.id}`}
                 className="inline-flex items-center text-blue-500 font-bold hover:gap-2 transition-all"
               >
-                View Details <span className="ml-2">→</span>
+                Booking Now <span className="ml-2">→</span>
               </Link>
             </div>
           ))}

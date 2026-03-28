@@ -1,12 +1,15 @@
 "use client";
 import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
+  const [name, setName] = useState(""); // নতুন
+  const [nid, setNid] = useState(""); // নতুন
+  const [contact, setContact] = useState(""); // নতুন
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -17,8 +20,24 @@ export default function Register() {
 
   const router = useRouter();
 
+  // পাসওয়ার্ড ভ্যালিডেশন লজিক
+  const validatePassword = (pass: string) => {
+    const hasUpperCase = /[A-Z]/.test(pass);
+    const hasLowerCase = /[a-z]/.test(pass);
+    const isLongEnough = pass.length >= 6;
+    return hasUpperCase && hasLowerCase && isLongEnough;
+  };
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validatePassword(password)) {
+      alert(
+        "Password must be 6+ characters, with at least 1 uppercase and 1 lowercase letter.",
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       // ১. Firebase-এ ইউজার তৈরি
@@ -29,16 +48,23 @@ export default function Register() {
       );
       const user = userCredential.user;
 
+      // Firebase প্রোফাইলে নাম আপডেট করা
+      await updateProfile(user, { displayName: name });
+
       // ২. MongoDB-তে অতিরিক্ত প্রোফাইল ডাটা সেভ
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: user.uid,
+          name, // নতুন
+          nid, // নতুন
+          contact, // নতুন
           email,
           age: Number(age),
           gender,
           location,
+          role: "user", // ডিফল্ট রোল
         }),
       });
 
@@ -61,6 +87,16 @@ export default function Register() {
         </h2>
 
         <form onSubmit={handleRegister} className="space-y-4">
+          {/* নাম */}
+          <input
+            type="text"
+            placeholder="Full Name"
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700"
+            required
+          />
+
+          {/* ইমেইল */}
           <input
             type="email"
             placeholder="Email"
@@ -69,10 +105,29 @@ export default function Register() {
             required
           />
 
+          {/* এনআইডি নম্বর */}
+          <input
+            type="text"
+            placeholder="NID Number"
+            onChange={(e) => setNid(e.target.value)}
+            className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700"
+            required
+          />
+
+          {/* কন্টাক্ট নম্বর */}
+          <input
+            type="text"
+            placeholder="Contact Number"
+            onChange={(e) => setContact(e.target.value)}
+            className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700"
+            required
+          />
+
+          {/* পাসওয়ার্ড */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder="Password (6+ char, A-Z, a-z)"
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700 pr-10"
               required
@@ -86,37 +141,33 @@ export default function Register() {
             </button>
           </div>
 
-          <input
-            type="number"
-            placeholder="Age"
-            onChange={(e) => setAge(e.target.value)}
-            className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700"
-            required
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              placeholder="Age"
+              onChange={(e) => setAge(e.target.value)}
+              className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700"
+              required
+            />
 
-          <select
-            onChange={(e) => setGender(e.target.value)}
-            className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700 text-gray-500"
-            required
-          >
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
+            <select
+              onChange={(e) => setGender(e.target.value)}
+              className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700 text-gray-500"
+              required
+            >
+              <option value="">Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
 
-          <input
-            type="text"
-            placeholder="Location (City/Area)"
-            onChange={(e) => setLocation(e.target.value)}
-            className="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700"
-            required
-          />
+          
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-blue-400"
+            className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-blue-400 font-bold"
           >
             {loading ? "Processing..." : "Sign Up"}
           </button>
