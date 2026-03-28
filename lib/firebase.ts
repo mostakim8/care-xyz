@@ -4,6 +4,7 @@ import {
   setPersistence,
   browserLocalPersistence,
 } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,6 +21,7 @@ if (!firebaseConfig.apiKey && typeof window === "undefined") {
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 export const auth = getAuth(app);
+export const db = getFirestore(app); // Firestore ইননিশিয়ালাইজেশন
 
 // সেশন ব্রাউজারে সেভ করে রাখার লজিক
 if (typeof window !== "undefined") {

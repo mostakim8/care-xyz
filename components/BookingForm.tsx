@@ -7,9 +7,7 @@ import { onAuthStateChanged } from "firebase/auth";
 export default function BookingForm({ pricePerDay }: { pricePerDay: number }) {
   const router = useRouter();
   const params = useParams() as { id?: string; service_id?: string };
-  const [duration, setDuration] = useState<number>(1);
   const [user, setUser] = useState<{ uid: string } | null>(null);
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     division: "",
     district: "",
@@ -17,6 +15,7 @@ export default function BookingForm({ pricePerDay }: { pricePerDay: number }) {
     area: "",
     address: "",
   });
+  const [duration, setDuration] = useState<number>(1);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -30,44 +29,24 @@ export default function BookingForm({ pricePerDay }: { pricePerDay: number }) {
     return () => unsubscribe();
   }, [router]);
 
-  // Calculation logic: Price × Duration
   const totalCost = duration * pricePerDay;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
 
-    setLoading(true);
-    try {
-      const serviceId = params?.id || params?.service_id || "general-service";
-      const bookingData = {
-        userId: user.uid,
-        serviceId,
-        duration,
-        totalCost,
-        ...formData,
-        status: "Pending",
-      };
+    const serviceId = params?.service_id || params?.id || "general-service";
+    const bookingData = {
+      userId: user.uid,
+      serviceId: serviceId,
+      duration,
+      totalCost,
+      ...formData,
+    };
 
-      const res = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookingData),
-      });
-
-      const result = await res.json();
-      if (result.success) {
-        alert("Booking confirmed! Total cost: $" + totalCost);
-        router.push("/my-bookings");
-      } else {
-        alert("Booking failed: " + result.error);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
+    // Save to localStorage and redirect to payment page
+    localStorage.setItem("bookingData", JSON.stringify(bookingData));
+    router.push("/payment");
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -83,7 +62,6 @@ export default function BookingForm({ pricePerDay }: { pricePerDay: number }) {
         Booking Form
       </h3>
 
-      {/* Location Fields */}
       <div className="grid grid-cols-2 gap-4">
         <input
           type="text"
@@ -128,7 +106,6 @@ export default function BookingForm({ pricePerDay }: { pricePerDay: number }) {
         required
       />
 
-      {/* Duration and Calculation */}
       <div className="pt-2">
         <label className="block mb-2 font-medium text-gray-700 dark:text-gray-300">
           Duration (Days):
@@ -153,10 +130,9 @@ export default function BookingForm({ pricePerDay }: { pricePerDay: number }) {
 
       <button
         type="submit"
-        disabled={loading}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-bold shadow-md cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-bold shadow-md cursor-pointer"
       >
-        {loading ? "Processing..." : "Confirm Booking"}
+        Proceed to Payment
       </button>
     </form>
   );
