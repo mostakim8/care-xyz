@@ -62,19 +62,19 @@ export default function Home() {
 
       {/* Mission Section */}
       <section className="py-24 bg-gray-50 dark:bg-gray-950/40 px-6 border-y border-gray-200/50 dark:border-gray-900 transition-colors duration-300 relative overflow-hidden">
-        {/* ব্যাকগ্রাউন্ড গ্লো ইফেক্ট */}
+        {/* Background Glow Effect */}
         <div className="absolute w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px] -top-10 -right-10 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* ১. বাম পাশ: টেক্সট ও কোর ভ্যালু */}
+          {/* Text Content */}
           <div className="space-y-8">
             <div>
               <span className="inline-block text-blue-600 dark:text-blue-500 font-bold tracking-widest uppercase text-xs px-3 py-1 bg-blue-50 dark:bg-blue-950/50 rounded-full border border-blue-200/30 dark:border-blue-800/30">
                 Our Mission
               </span>
-              <h3 className="text-3xl md:text-5xl font-black tracking-tight mt-4 mb-6 text-gray-950 dark:text-white leading-tight">
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight mt-4 mb-6 text-gray-950 dark:text-white leading-tight">
                 Bridging the Gap Between <br /> Care and Need
-              </h3>
+              </h2>
               <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
                 Care.xyz was founded with a simple mission: to ensure that no
                 one has to struggle to find reliable, high-quality care for
@@ -83,16 +83,15 @@ export default function Home() {
               </p>
             </div>
 
-            {/* ছোট ছোট ২টা ভ্যালু পয়েন্ট */}
             <div className="space-y-4 pt-4 border-t border-gray-200/60 dark:border-gray-900">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-blue-600/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg font-bold">
                   ✓
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white">
                     100% Certified Experts
-                  </h4>
+                  </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     Every caregiver is professionally trained and
                     background-verified.
@@ -105,9 +104,9 @@ export default function Home() {
                   ✓
                 </div>
                 <div>
-                  <h4 className="text-base font-bold text-gray-900 dark:text-white">
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white">
                     Transparent Booking
-                  </h4>
+                  </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
                     No hidden costs. Track everything right from your dashboard.
                   </p>
@@ -116,9 +115,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ২. ডান পাশ: প্রফেশনাল ইমেজ ফ্রেম */}
           <div className="relative lg:mt-0 mt-8 flex justify-center">
-            {/* ইমেজের পেছনের মডার্ন জ্যামিতিক ডট বা বক্স ইফেক্ট */}
             <div className="absolute -inset-4 bg-gradient-to-tr from-blue-600/20 to-transparent rounded-3xl blur-xl opacity-70" />
 
             <div className="relative w-full max-w-[500px] h-[400px] rounded-3xl overflow-hidden border-4 border-white dark:border-gray-900 shadow-2xl">
@@ -127,17 +124,15 @@ export default function Home() {
                 alt="Compassionate Caregiving"
                 className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
               />
-              {/* ইমেজের ওপর হালকা গ্লেজ ওভারলে */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
             </div>
 
-            {/* ছবির ওপর ভাসমান একটি ছোট ট্রাস্ট ব্যাজ (Floating Card) */}
             <div className="absolute -bottom-6 -left-6 bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-800 flex items-center space-x-3 max-w-[200px] animate-bounce-slow">
               <span className="text-3xl">🛡️</span>
               <div>
-                <h5 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-wider">
+                <h4 className="text-xs font-black text-gray-900 dark:text-white uppercase tracking-wider">
                   Trusted By
-                </h5>
+                </h4>
                 <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
                   500+ Families
                 </p>
@@ -148,7 +143,7 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 bg-gray-50 dark:bg-gray-950/40 px-6 border-b   border-gray-200/60 dark:border-gray-900 transition-colors duration-300">
+      <section className="py-24 bg-gray-50 dark:bg-gray-950/40 px-6 border-b border-gray-200/60 dark:border-gray-900 transition-colors duration-300">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-black tracking-tight text-gray-950 dark:text-white mb-4">
             How It Works
@@ -160,13 +155,13 @@ export default function Home() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-24">
           {/* Step 1 */}
-          <div className="p-8 bg-white dark:bg-gray-900/30 hover:shadow-xl dark:hover:shadow-blue-900/50  rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm transition-all duration-300">
+          <div className="p-8 bg-white dark:bg-gray-900/30 hover:shadow-xl dark:hover:shadow-blue-900/50 rounded-2xl border border-gray-200/60 dark:border-gray-800/60 shadow-sm transition-all duration-300">
             <div className="w-12 h-12 bg-blue-500/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400 flex items-center justify-center rounded-full font-bold text-xl mx-auto mb-4">
               1
             </div>
-            <h4 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
               Select Service
-            </h4>
+            </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
               Choose from Baby care, Elderly care, or Patient care services.
             </p>
@@ -177,9 +172,9 @@ export default function Home() {
             <div className="w-12 h-12 bg-blue-500/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400 flex items-center justify-center rounded-full font-bold text-xl mx-auto mb-4">
               2
             </div>
-            <h4 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
               Book Appointment
-            </h4>
+            </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
               Fill up the simple form with dates and preferred requirements.
             </p>
@@ -190,9 +185,9 @@ export default function Home() {
             <div className="w-12 h-12 bg-blue-500/10 text-blue-600 dark:bg-blue-600/20 dark:text-blue-400 flex items-center justify-center rounded-full font-bold text-xl mx-auto mb-4">
               3
             </div>
-            <h4 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+            <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
               Get Caregiver
-            </h4>
+            </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
               Our verified professional caregiver will arrive right at your
               doorstep.
@@ -204,7 +199,7 @@ export default function Home() {
       {/* Services Section */}
       <section
         id="services"
-        className="py-24 bg-gray-50 dark:bg-gray-950/40 px-6  border-b border-gray-200/60 dark:border-gray-900 transition-colors duration-300"
+        className="py-24 bg-gray-50 dark:bg-gray-950/40 px-6 border-b border-gray-200/60 dark:border-gray-900 transition-colors duration-300"
       >
         <div className="text-center mb-16">
           <h2 className="text-4xl font-black tracking-tight text-gray-950 dark:text-white mb-4">
@@ -221,22 +216,17 @@ export default function Home() {
               key={service.id}
               className="p-10 bg-white dark:bg-gray-900/30 border border-gray-200/60 dark:border-gray-800/60 rounded-3xl hover:border-blue-500/50 dark:hover:border-blue-500/30 hover:bg-gray-50/50 dark:hover:bg-gray-900/50 shadow-sm transition-all duration-300 group relative overflow-hidden"
             >
-              {/* আইকন বা ইমোজি */}
               <div className="text-5xl mb-6 group-hover:scale-110 transition-transform inline-block">
                 {service.id === "1" ? "👶" : service.id === "2" ? "👴" : "🏥"}
               </div>
 
-              {/* টাইটেল */}
-              <h4 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 {service.title}
-              </h4>
+              </h3>
 
-              {/* ডেসক্রিপশন */}
               <p className="text-gray-600 dark:text-gray-400 mb-8 leading-relaxed text-sm font-medium">
                 {service.desc}
               </p>
-
-              {/* বুকিং লিঙ্ক */}
               <Link
                 href={`/service/${service.id}`}
                 className="inline-flex items-center text-blue-600 dark:text-blue-500 font-bold hover:translate-x-1 transition-transform cursor-pointer"
@@ -276,7 +266,9 @@ export default function Home() {
       <section className="py-24 bg-gray-50 dark:bg-gray-950/40 px-6 border-t border-gray-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4 text-black dark:text-gray-50">What Our Clients Say</h2>
+            <h2 className="text-4xl font-bold mb-4 text-black dark:text-gray-50">
+              What Our Clients Say
+            </h2>
             <p className="text-gray-500">
               Real stories from people who trusted our care services.
             </p>
