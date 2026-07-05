@@ -7,9 +7,9 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function Register() {
-  const [name, setName] = useState(""); // নতুন
-  const [nid, setNid] = useState(""); // নতুন
-  const [contact, setContact] = useState(""); // নতুন
+  const [name, setName] = useState(""); 
+  const [nid, setNid] = useState(""); 
+  const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -20,7 +20,7 @@ export default function Register() {
 
   const router = useRouter();
 
-  // পাসওয়ার্ড ভ্যালিডেশন লজিক
+  // Password validation function/logic
   const validatePassword = (pass: string) => {
     const hasUpperCase = /[A-Z]/.test(pass);
     const hasLowerCase = /[a-z]/.test(pass);
@@ -40,7 +40,7 @@ export default function Register() {
 
     setLoading(true);
     try {
-      // ১. Firebase-এ ইউজার তৈরি
+      // create user with email and password using Firebase Authentication
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
@@ -48,23 +48,23 @@ export default function Register() {
       );
       const user = userCredential.user;
 
-      // Firebase প্রোফাইলে নাম আপডেট করা
+      // Update the user's display name in Firebase Authentication
       await updateProfile(user, { displayName: name });
 
-      // ২. MongoDB-তে অতিরিক্ত প্রোফাইল ডাটা সেভ
+      // Save additional user data to MongoDB via API
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           uid: user.uid,
-          name, // নতুন
-          nid, // নতুন
-          contact, // নতুন
+          name,
+          nid, 
+          contact, 
           email,
           age: Number(age),
           gender,
           location,
-          role: "user", // ডিফল্ট রোল
+          role: "user",
         }),
       });
 
@@ -87,7 +87,7 @@ export default function Register() {
         </h2>
 
         <form onSubmit={handleRegister} className="space-y-4">
-          {/* নাম */}
+          {/* name */}
           <input
             type="text"
             placeholder="Full Name"
@@ -96,7 +96,7 @@ export default function Register() {
             required
           />
 
-          {/* ইমেইল */}
+          {/* email */}
           <input
             type="email"
             placeholder="Email"
@@ -105,7 +105,7 @@ export default function Register() {
             required
           />
 
-          {/* এনআইডি নম্বর */}
+          {/* nid no... */}
           <input
             type="text"
             placeholder="NID Number"
@@ -114,7 +114,7 @@ export default function Register() {
             required
           />
 
-          {/* কন্টাক্ট নম্বর */}
+          {/* Contact Number */}
           <input
             type="text"
             placeholder="Contact Number"
@@ -123,7 +123,7 @@ export default function Register() {
             required
           />
 
-          {/* পাসওয়ার্ড */}
+          {/* Password */}
           <div className="relative">
             <input
               type={showPassword ? "text" : "password"}

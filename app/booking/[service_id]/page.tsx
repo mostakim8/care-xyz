@@ -11,7 +11,7 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 
-// Stripe লোড করা
+// Load Stripe 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
@@ -64,7 +64,7 @@ function InnerBookingPage() {
     };
 
     try {
-      // ১. পেমেন্ট ইন্টেন্ট তৈরি
+      // 1. Create a payment session on the server
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -82,7 +82,7 @@ function InnerBookingPage() {
         throw new Error("Card element not found");
       }
 
-      // ২. পেমেন্ট কনফার্ম
+      // 2. Confirm the payment with Stripe
       const { error, paymentIntent } = await stripe.confirmCardPayment(
         data.clientSecret,
         {
@@ -101,7 +101,7 @@ function InnerBookingPage() {
       }
 
       if (paymentIntent?.status === "succeeded") {
-        // ৩. সাকসেস পেজে রিডাইরেক্ট
+        // ৩. redirect to success page with paymentIntentId
         router.push(`/success?paymentIntentId=${data.paymentIntentId}`);
       }
     } catch (err: any) {

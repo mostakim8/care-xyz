@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   try {
     const { paymentIntentId } = await req.json();
 
-    // ১. Stripe থেকে পেমেন্ট ইন্টেন্ট ডিটেইলস নিয়ে আসা
+    // 1. Retrieve the payment intent from Stripe to get the metadata
     const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
     const bookingData = intent.metadata;
 
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
     await connectToDatabase();
 
-    // ২. ডাটাবেসে নতুন বুকিং সেভ করা
+    // 2. Create a new booking in the database using the metadata from the payment intent
     const newBooking = await Booking.create({
       userId: bookingData.userId,
       serviceId: bookingData.serviceId,

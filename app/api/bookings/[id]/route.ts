@@ -4,12 +4,11 @@ import Booking from "@/models/Booking";
 
 export async function DELETE(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }, // এখানে Promise টাইপ ব্যবহার করা হয়েছে
+  { params }: { params: Promise<{ id: string }> }, 
 ) {
   try {
     await connectToDatabase();
 
-    // বিল্ড এরর ফিক্স করতে params কে অবশ্যই await করতে হবে
     const { id } = await params;
 
     if (!id) {

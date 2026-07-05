@@ -10,7 +10,7 @@ export async function GET(req: Request) {
     const role = searchParams.get("role");
 
     let query = {};
-    // আপনার MongoDB-তে ফিল্ডের নাম 'userId'
+    // my mongodb field name is "userId"
     if (role !== "admin" && uid) {
       query = { userId: uid };
     }

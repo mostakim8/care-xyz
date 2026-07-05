@@ -14,7 +14,7 @@ function SuccessContent() {
     if (paymentIntentId) {
       const finalizeBooking = async () => {
         try {
-          // লোডারটি স্পষ্টভাবে দেখার জন্য ১ সেকেন্ড আর্টিফিশিয়াল ডিলে (ঐচ্ছিক)
+          // Simulate a delay to show the loader for a better user experience
           await new Promise((resolve) => setTimeout(resolve, 1500));
 
           const res = await fetch("/api/bookings/confirm", {
@@ -30,7 +30,7 @@ function SuccessContent() {
               position: "top-center",
               style: {
                 borderRadius: "15px",
-                background: "#10b981", // Green background for toast
+                background: "#10b981", 
                 color: "#fff",
                 fontWeight: "bold",
               },
@@ -58,7 +58,7 @@ function SuccessContent() {
       <Toaster />
 
       {loading ? (
-        /* --- Enhanced Sky & Green Premium Loader --- */
+        /* Enhanced Sky & Green Premium Loader */
         <div className="flex flex-col items-center py-12">
           <div className="relative w-24 h-24">
             {/* Outer Ring - Sky Blue */}
@@ -83,7 +83,7 @@ function SuccessContent() {
           </div>
         </div>
       ) : (
-        /* --- Success Content --- */
+        /* Success Content */
         <div className="animate-in fade-in zoom-in duration-700">
           <div className="w-20 h-20 bg-green-50 dark:bg-green-500/10 rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-green-100 dark:border-green-500/20">
             <svg

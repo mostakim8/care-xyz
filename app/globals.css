@@ -6,30 +6,32 @@
   --foreground: #171717;
 }
 
-/* যখন .dark ক্লাসটি অ্যাপ্লাই হবে (next-themes এর মাধ্যমে) */
+/* ম্যানুয়াল ডার্ক মোড (next-themes এর জন্য) */
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #030712; /* প্রফেশনাল ডার্ক গ্রে/ব্ল্যাক (gray-950) */
+  --foreground: #f3f4f6; /* সফট হোয়াইট (gray-100) */
 }
+
+/* Tailwind v4 এর জন্য ডار্ক ভ্যারিয়েন্ট কনফিগারেশন */
+@variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
-/* সিস্টেম প্রেফারেন্স অনুযায়ী অটোমেটিক ডার্ক মোড */
+/* সিস্টেম প্রেফারেন্স অনুযায়ী অটোমেটিক ডার্ক মোড ট্র্যাকিং */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #030712;
+    --foreground: #f3f4f6;
   }
 }
 
+/* গ্লোবাল বডি স্টাইল */
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }

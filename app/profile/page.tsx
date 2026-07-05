@@ -1,9 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase"; // db ব্যবহারের প্রয়োজন নেই যেহেতু MongoDB থেকে ডাটা আসবে
+import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { services } from "@/data/services"; // আপনার সার্ভিস ডাটা ইম্পোর্ট করা হলো
+import { services } from "@/data/services";
 
 export default function Profile() {
   const [userProfile, setUserProfile] = useState<any>(null);
@@ -28,7 +28,7 @@ export default function Profile() {
             uid: user.uid,
           });
 
-          // Firestore-এর বদলে MongoDB API থেকে ডাটা আনা
+          // Fetch bookings based on user role
           const bookingRes = await fetch(
             `/api/bookings?uid=${user.uid}&role=${userData.role}`,
           );
@@ -52,7 +52,7 @@ export default function Profile() {
     return () => unsubscribeAuth();
   }, [router]);
 
-  // MongoDB API ব্যবহার করে স্ট্যাটাস আপডেট
+  // Update booking status function for admin users
   const updateBookingStatus = async (id: string, newStatus: string) => {
     try {
       const res = await fetch(`/api/bookings/${id}`, {
@@ -93,7 +93,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-12 px-4">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* --- Profile Card Section (আপনার আগের ডিজাইন অনুযায়ী) --- */}
+        {/*Profile Card Section */}
         <div className="bg-white dark:bg-gray-900 p-8 rounded-[32px] shadow-xl border border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-center gap-8">
           <div className="relative">
             <img
@@ -158,7 +158,7 @@ export default function Profile() {
           </button>
         </div>
 
-        {/* --- Booking History Section --- */}
+        {/* Booking History Section */}
         <div className="bg-white dark:bg-gray-900 rounded-[32px] shadow-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
           <div className="p-6 border-b dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
             <h3 className="text-xl font-bold tracking-tight">
@@ -184,7 +184,7 @@ export default function Profile() {
                 </thead>
                 <tbody className="divide-y dark:divide-gray-800">
                   {bookings.map((booking) => {
-                    // সার্ভিস আইডি মিলিয়ে নাম বের করা
+                    // Find the service info based on the serviceId from the services array
                     const serviceInfo = services.find(
                       (s) => s.id === booking.serviceId,
                     );

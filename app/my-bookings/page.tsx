@@ -10,21 +10,21 @@ export default function MyBookings() {
   const router = useRouter();
 
   const serviceNames: { [key: string]: string } = {
-    "1": "Baby Sitting",
+    "1": "Baby Care",
     "2": "Elderly Care",
     "3": "Sick People Service",
   };
 
   useEffect(() => {
-    // onAuthStateChanged ব্যবহার করায় এটি ফায়ারবেসের কনফার্মেশনের জন্য ওয়েট করবে
+    // onAuthStateChanged is used, it will wait for Firebase's confirmation.
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          // আপনার API কল
+          // API call
           const res = await fetch(`/api/my-bookings?userId=${user.uid}`);
           const result = await res.json();
 
-          // গুরুত্বপূর্ণ: আপনার API 'data' প্রপার্টির ভেতর অ্যারে পাঠাচ্ছে
+          // important: Api call is sending data in properties 
           if (result.success && result.data) {
             setBookings(result.data);
           }
@@ -34,7 +34,7 @@ export default function MyBookings() {
           setLoading(false);
         }
       } else {
-        // ফায়ারবেস যখন নিশ্চিত করবে ইউজার নেই, তখনই রিডাইরেক্ট করবে
+        // when user is not logged in, redirect to login page
         setLoading(false);
         router.push("/login");
       }
@@ -43,7 +43,7 @@ export default function MyBookings() {
     return () => unsubscribe();
   }, [router]);
 
-  // handleCancel ফাংশনটি আগের মতোই থাকবে...
+  // handleCancel function to cancel a booking
   const handleCancel = async (id: string) => {
     if (!id) return;
     const confirmCancel = window.confirm("Are you sure you want to cancel?");
